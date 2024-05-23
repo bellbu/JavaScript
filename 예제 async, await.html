@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+</head>
+
+<body>
+<form id="form">
+</form>
+
+<script>
+// 1. async
+async function fetchUser() {
+    return 'jb';
+}
+
+const user = fetchUser();
+user.then(console.log); // jb
+console.log(user); // Promise {<fulfilled>: 'jb'}
+
+// 2. await
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+// ( = const delay = (ms) => new Promise(resolve => setTimeout(resolve,ms)); )
+
+async function getApple() {
+    await delay(2000);
+    return '🍎';
+}
+
+async function getBanana() {
+    await delay(2000);
+    return '🍌';
+}
+
+async function pickFruits() {
+    const apple = await getApple();
+    const banana = await getBanana();
+    return `${apple} + ${banana}`;
+    /*
+    return getApple().then(apple => {
+        return getBanana().then(banana => `${apple} + ${banana}`);
+    })
+    */
+}
+
+// 3. 유용한 Promise API
+function pickAllFruits() {
+    return Promise.all([getApple(), getBanana()]).then(fruits =>
+        fruits.join(' + ')
+    );
+}
+pickAllFruits().then(console.log); // 결과 2초 정도 걸림
+pickFruits().then(console.log); // 결과 4초 정도 걸림
+
+function pickFastOne() {
+    return Promise.race([getApple(), getBanana()]);
+}
+pickFastOne().then(console.log); // 가장 빨리 호출되는 하나만 출력
+</script>
+</body>
+
