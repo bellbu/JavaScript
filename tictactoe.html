@@ -21,12 +21,39 @@
 
 <body>
 <script>
-  const data = [];
-  for(let i = 0; i < 3; i++) {
-    data.push([]);
-  }
-  document.body.apeend(document.createElement('table'));
+  const { body } = document; // 구조분해 할당
+  
+  const $table = document.createElement('table');
+  const $result = document.createElement('div');
+  const rows = [];
+  let turn = 'O';
+  
+  const callback = (event) => {
+    // 칸에 글자가 있나?
+    if(event.target.textContent !== '') {
+      console.log('빈칸이 아닙니다.');
+      return;
+    } 
+    // 빈칸이면
+    console.log('빈칸입니다');
+    event.target.textContent = turn;
+    turn = (turn === 'X') ? 'O' : 'X';
+  };
 
+  for(let i = 1; i <= 3; i++) {
+    const $tr = document.createElement('tr');
+    const cells = [];
+    for(let j = 1; j <= 3; j++) {
+      const $td = document.createElement('td');
+      cells.push($td);
+      $td.addEventListener('click', callback)
+      $tr.append($td);
+    }
+    rows.push(cells);
+    $table.append($tr);   
+  }
+  document.body.append($table);
+  document.body.append($result);
 </script>
 </body>
 </html>
