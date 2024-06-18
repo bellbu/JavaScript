@@ -10,9 +10,10 @@
   }
 
   td {
-  border: 1px solid black;
-  width: 40px;
-  height: 40px;
+  border: 2px solid black;
+  width: 100px;
+  height: 100px;
+  font-size: 32px;
   text-align: center;
   }
 
@@ -25,6 +26,7 @@
   
   const $table = document.createElement('table');
   const $result = document.createElement('div');
+
   const rows = [];
   let turn = 'O';
 
@@ -63,33 +65,48 @@
     }
     return hasWinner;
   };
-  
-  const callback = (event) => {
 
+  const checkWinnerAndDraw = (target) => {
+    const hasWinner = checkWinner(target);
+    if (hasWinner) { // 승자가 있으면
+      $result.textContent = `${turn}님이승리!`;
+      $table.removeEventListener('click', callback);
+      return;
+    }
+    // 승자가 없으면
+    const draw = rows.flat().every((cell) => cell.textContent);
+    if (draw) {
+      $result.textContent = '무승부';
+      return;
+    }
+    turn = turn === 'X' ? 'O' : 'X';
+  };
+  
+  let clickable = true;
+  const callback = (event) => {
+    if(!clickable) return;
     // 칸에 글자가 있나?
     if(event.target.textContent !== '') {
       console.log('빈칸이 아닙니다.');
       return;
     } 
+
     // 빈칸이면
     console.log('빈칸입니다.');
     event.target.textContent = turn;
-    // 승부 판단하기
-    const hasWinner = checkWinner(event.target);
-    if(hasWinner) {
-      $result.textContent = `${turn}님이 승리!`;
-      $table.removeEventListener('click', callback);
-      return;
-    }
-    
-    // 무승부 검사
-    const draw = rows.flat().every((cell) => cell.textContent);
-    if (draw) {
-      $result.textContent = `무승부`; 
-      return;
-    }
 
-    turn = turn === 'X' ? 'O' : 'X';
+    // 승부 판단하기
+    checkWinnerAndDraw(event.target);
+    if (turn === 'X') {
+      clickable = false;
+      setTimeout(() => {
+        const emptyCells = rows.flat().filter((v) => !v.textContent);
+        const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        randomCell.textContent = 'X';
+        checkWinnerAndDraw(event.target);
+        clickable = true;
+      }, 1000);
+    }
   };
 
   for(let i = 1; i <= 3; i++) {
